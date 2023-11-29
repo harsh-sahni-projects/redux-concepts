@@ -1,0 +1,17 @@
+.formContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 3rem;
+}
+
+.infoDiv {
+    width: 300px;
+    display: flex;
+    justify-content: space-between;
+    margin: .5rem;
+}
+.loginDiv {
+    margin: .5rem;
+    text-align: center;
+}

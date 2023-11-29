@@ -1,0 +1,9 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: cadetblue;
+}
+.msg {
+    margin-right: 1rem;
+}

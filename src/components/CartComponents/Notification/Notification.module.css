@@ -1,0 +1,31 @@
+.notificationContainer {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 0.75rem 0.75rem;
+    width: 50vw;
+    text-align: center;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 2px 2px 6px 2px #ccc;
+    opacity: 0.9;
+    user-select: none;
+}
+.closeBtn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
+    padding: 3px 10px;
+    border: 1px solid rgb(233, 31, 71, 0.1);
+}
+
+.success {
+    background-color: green;
+}
+.error {
+    background-color: coral;
+}
+.loading {
+    background-color: lightskyblue;
+}
