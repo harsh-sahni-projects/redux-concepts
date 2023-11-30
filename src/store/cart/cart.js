@@ -3,25 +3,33 @@ import { createSlice } from "@reduxjs/toolkit";
 const cartSlice = createSlice({
 	name: 'cart',
 	initialState: {
-		items: [{
-			id: 1,
-			name: 'Pizza',
-			unitPrice: 10,
-			quantity: 1
-		},{
-			id: 2,
-			name: 'Burger',
-			unitPrice: 5,
-			quantity: 1
-		}],
-		amount: 15,
-		totalItems: 2,
+		items: [
+			// {
+			// id: 1,
+			// name: 'Pizza',
+			// unitPrice: 10,
+			// quantity: 1
+			// },{
+			// 	id: 2,
+			// 	name: 'Burger',
+			// 	unitPrice: 5,
+			// 	quantity: 1
+			// }
+		],
+		amount: 0,
+		totalItems: 0,
 		// nextId: 3
 	},
 	reducers: {
 		// incrementId(state) {
 		// 	state.nextId++;
 		// },
+		loadCart(state, action) {
+			const { items, amount, totalItems } = action.payload;
+			state.items = [...items];
+			state.amount = amount;
+			state.totalItems = totalItems;
+		},
 		addItem(state, action) {
 			const itemDetails = action.payload;
 			const index = state.items.findIndex(item => item.id == itemDetails.id);

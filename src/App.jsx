@@ -10,18 +10,71 @@ import Notification from './components/CartComponents/Notification/Notification'
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { uiActions } from './store/cart/ui';
+import axios from 'axios';
+import { cartActions } from './store/cart/cart';
+
+const endpoint = 'http://localhost:3000';
+let initialRun = true;
+
 
 function App() {
+  const dispatch = useDispatch();
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const cartVisible = useSelector(state => state.cartUi.cartVisible);
   const cart = useSelector(state => state.cart);
   const newNotification = useSelector(state => state.cartUi.notification);
-  console.log('newNotification:', newNotification);
-  const dispatch = useDispatch();
+
+  if (newNotification) {
+    setTimeout(() => {
+      dispatch(uiActions.hideNotification());
+    }, 1000);
+  }
+
+  const loadCart = () => {
+    axios.get(endpoint + '/getCart')
+      .then(res => {
+        console.log('Server data:', res.data);
+        dispatch(cartActions.loadCart(res.data));
+      })
+      .catch(err => {
+        console.log('ERR:', err.message);
+      })
+  }
 
   useEffect(() => {
-    dispatch(uiActions.showNotification({type: 'success', msg: 'msg'}))
-  }, [])
+    if (initialRun) {
+      // loadCart();
+      console.log('Initial run...')
+      initialRun = false;
+      return;
+    }
+    console.log('Not initial run')
+
+    const saveCart = async () => {
+      dispatch(uiActions.showNotification({type: 'loading', msg: 'Saving...'}));
+      
+      let res = await axios.post(endpoint + '/updateCart', cart)
+
+      dispatch(uiActions.showNotification({
+        type: 'success',
+        msg: 'Saved'
+      }));
+      console.log('Updated cart on server');
+      
+      // No need to try..catch err here
+      // coz we will catch ALL errs below in catch
+    }
+        
+    // Errs catched here (including n/w err + other err if this component will throw)
+    // saveCart() is async, so we can use catch.
+    saveCart().catch(err => {
+      dispatch(uiActions.showNotification({
+        type: 'error',
+        msg: err.message
+      }));
+      console.log(err.message);
+    });
+  }, [cart])
 
   return (
     <>

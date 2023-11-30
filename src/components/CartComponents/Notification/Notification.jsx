@@ -30,7 +30,7 @@ const Notification = () => {
   return (
 		<div className={classes} >
 			<span className={styles.closeBtn}>x</span>
-			{msg}ABC
+			{msg}
 		</div>
 	)
 }

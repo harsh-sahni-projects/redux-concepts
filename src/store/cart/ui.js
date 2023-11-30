@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const uiSlice = createSlice({
 	name: 'cartUi',
 	initialState: {
-		cartVisible: false,
+		cartVisible: true,
 		notification: null
 	},
 	reducers: {
@@ -16,12 +16,14 @@ const uiSlice = createSlice({
 				msg,
 				type
 			}
-			console.log(state.notification);
 			// if (type === 'success') {
 			// 	setTimeout(() => {
 			// 		state.notification = null;
 			// 	}, 500);
 			// } 
+		},
+		hideNotification(state) {
+			state.notification = null
 		}
 	}
 });
