@@ -1,21 +1,13 @@
+import axios from 'axios';
 import { createSlice } from "@reduxjs/toolkit";
+import { uiActions } from "./ui";
+
+let endpoint = 'http://localhost:3000';
 
 const cartSlice = createSlice({
 	name: 'cart',
 	initialState: {
-		items: [
-			// {
-			// id: 1,
-			// name: 'Pizza',
-			// unitPrice: 10,
-			// quantity: 1
-			// },{
-			// 	id: 2,
-			// 	name: 'Burger',
-			// 	unitPrice: 5,
-			// 	quantity: 1
-			// }
-		],
+		items: [],
 		amount: 0,
 		totalItems: 0,
 		// nextId: 3
@@ -70,6 +62,23 @@ const cartSlice = createSlice({
 		}
 	}
 });
+
+export const saveCart = (cart) => {
+	return async (dispatch) => {
+		dispatch(uiActions.showNotification({type: 'loading', msg: 'Saving...'}));
+		try {
+			await sendReq();
+			dispatch(uiActions.showNotification({ type: 'success', msg: 'Saved' }));
+		} catch (err) {
+			dispatch(uiActions.showNotification({ type: 'error', msg: err.message }));
+		}
+		
+		async function sendReq() {
+			await axios.post(endpoint + '/updateCart', cart)
+		}
+
+	}
+}
 
 export const cartActions = cartSlice.actions;
 export default cartSlice.reducer;

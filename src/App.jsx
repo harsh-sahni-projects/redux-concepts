@@ -6,16 +6,14 @@ import CartHeader from './components/CartComponents/CartHeader/CartHeader';
 import Cart from './components/CartComponents/Cart/Cart';
 import Menu from './components/CartComponents/Menu/Menu';
 import Notification from './components/CartComponents/Notification/Notification';
+import axios from 'axios';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { uiActions } from './store/cart/ui';
-import axios from 'axios';
-import { cartActions } from './store/cart/cart';
+import { cartActions, saveCart } from './store/cart/cart';
 
-const endpoint = 'http://localhost:3000';
 let initialRun = true;
-
 
 function App() {
   const dispatch = useDispatch();
@@ -44,36 +42,11 @@ function App() {
   useEffect(() => {
     if (initialRun) {
       // loadCart();
-      console.log('Initial run...')
       initialRun = false;
       return;
     }
-    console.log('Not initial run')
-
-    const saveCart = async () => {
-      dispatch(uiActions.showNotification({type: 'loading', msg: 'Saving...'}));
-      
-      let res = await axios.post(endpoint + '/updateCart', cart)
-
-      dispatch(uiActions.showNotification({
-        type: 'success',
-        msg: 'Saved'
-      }));
-      console.log('Updated cart on server');
-      
-      // No need to try..catch err here
-      // coz we will catch ALL errs below in catch
-    }
-        
-    // Errs catched here (including n/w err + other err if this component will throw)
-    // saveCart() is async, so we can use catch.
-    saveCart().catch(err => {
-      dispatch(uiActions.showNotification({
-        type: 'error',
-        msg: err.message
-      }));
-      console.log(err.message);
-    });
+    dispatch(saveCart(cart));
+    // --- Commented code at end of this file ---
   }, [cart])
 
   return (
@@ -91,3 +64,34 @@ function App() {
 }
 
 export default App
+
+/*
+--- BECAUSE THIS IS "LOGIC" (AND ASYNC), WE CAN ------
+--- MOVE IT TO THUNK (store/cart.js) FILE. SO THAT ---
+--- OUR UI COMPONENT REMAINS CLEAR AND EASY TO USE ---
+
+const saveCart = async () => {
+  dispatch(uiActions.showNotification({type: 'loading', msg: 'Saving...'}));
+  
+  let res = await axios.post(endpoint + '/updateCart', cart)
+
+  dispatch(uiActions.showNotification({
+    type: 'success',
+    msg: 'Saved'
+  }));
+  console.log('Updated cart on server');
+  
+  // No need to try..catch err here
+  // coz we will catch ALL errs below in catch
+}
+    
+// Errs catched here (including n/w err + other err if this component will throw)
+// saveCart() is async, so we can use catch.
+saveCart().catch(err => {
+  dispatch(uiActions.showNotification({
+    type: 'error',
+    msg: err.message
+  }));
+  console.log(err.message);
+});
+*/
