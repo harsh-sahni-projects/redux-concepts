@@ -10,15 +10,12 @@ const cartSlice = createSlice({
 		items: [],
 		amount: 0,
 		totalItems: 0,
-		// nextId: 3
+		isChanged: false
 	},
 	reducers: {
-		// incrementId(state) {
-		// 	state.nextId++;
-		// },
 		loadCart(state, action) {
 			const { items, amount, totalItems } = action.payload;
-			state.items = [...items];
+			state.items = items;
 			state.amount = amount;
 			state.totalItems = totalItems;
 		},
@@ -39,6 +36,7 @@ const cartSlice = createSlice({
 			
 			state.amount += itemDetails.unitPrice * itemDetails.quantity;
 			state.totalItems += 1;
+			state.isChanged = true;
 		},
 		remoteItem(state, action) {
 			const itemId = action.payload.id;
@@ -49,6 +47,7 @@ const cartSlice = createSlice({
 			if (state.items[index].quantity == 0) {
 				state.items.splice(index,1);
 			}
+			state.isChanged = true;
 			// --- OR ----
 			// const itemId = action.payload.id;
 			// const existingItem = state.items.find(i => i.id == itemId);
@@ -59,9 +58,26 @@ const cartSlice = createSlice({
 			// }
 			// state.amount -= existingItem.unitPrice;
 			// state.totalItems--;
+			// state.isChanged = true;
 		}
 	}
 });
+
+export const fetchCartData = () => {
+	return async (dispatch) => {
+		dispatch(uiActions.showNotification({ type: 'loading', msg: 'Fetching cart data from server...' }));
+		axios.get(endpoint + '/getCart')
+		.then(res => {
+				dispatch(uiActions.showNotification({ type: 'success', msg: 'Loaded' }));
+        console.log('Server data:', res.data);
+        dispatch(cartSlice.actions.loadCart(res.data));
+      })
+      .catch(err => {
+				dispatch(uiActions.showNotification({ type: 'error', msg: err.msg }));
+        console.log('ERR:', err.message);
+      })
+	}
+}
 
 export const saveCart = (cart) => {
 	return async (dispatch) => {

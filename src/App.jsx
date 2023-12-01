@@ -6,12 +6,11 @@ import CartHeader from './components/CartComponents/CartHeader/CartHeader';
 import Cart from './components/CartComponents/Cart/Cart';
 import Menu from './components/CartComponents/Menu/Menu';
 import Notification from './components/CartComponents/Notification/Notification';
-import axios from 'axios';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { uiActions } from './store/cart/ui';
-import { cartActions, saveCart } from './store/cart/cart';
+import { saveCart, fetchCartData } from './store/cart/cart';
 
 let initialRun = true;
 
@@ -28,25 +27,19 @@ function App() {
     }, 1000);
   }
 
-  const loadCart = () => {
-    axios.get(endpoint + '/getCart')
-      .then(res => {
-        console.log('Server data:', res.data);
-        dispatch(cartActions.loadCart(res.data));
-      })
-      .catch(err => {
-        console.log('ERR:', err.message);
-      })
-  }
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, [])
 
   useEffect(() => {
     if (initialRun) {
-      // loadCart();
-      initialRun = false;
+      initialRun = false; // Don't save cart if initial run
       return;
     }
-    dispatch(saveCart(cart));
-    // --- Commented code at end of this file ---
+    if (cart.isChanged) 
+      dispatch(saveCart(cart)); // only update cart if item added/removed. Don't update when cart data is initially fetched from server
+    
+      // --- Commented code at end of this file ---
   }, [cart])
 
   return (
@@ -66,9 +59,10 @@ function App() {
 export default App
 
 /*
---- BECAUSE THIS IS "LOGIC" (AND ASYNC), WE CAN ------
---- MOVE IT TO THUNK (store/cart.js) FILE. SO THAT ---
---- OUR UI COMPONENT REMAINS CLEAR AND EASY TO USE ---
+--- BECAUSE THIS IS "LOGIC" (AND ASYNC), WE CAN ----
+--- MOVE IT TO THUNK (in store/cart.js file). SO ---
+--- THAT OUR UI COMPONENT REMAINS CLEAR AND EASY ---
+--- TO USE ---
 
 const saveCart = async () => {
   dispatch(uiActions.showNotification({type: 'loading', msg: 'Saving...'}));
